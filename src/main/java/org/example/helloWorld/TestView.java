@@ -5,7 +5,6 @@ import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import org.example.helloWorld.HelloWorldViewModel;
 
 import java.net.URL;
 import java.util.ResourceBundle;
