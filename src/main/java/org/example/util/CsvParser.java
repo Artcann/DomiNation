@@ -18,12 +18,12 @@ public class CsvParser {
     private static final Logger logger = LogManager.getLogger(CsvParser.class);
 
     @org.jetbrains.annotations.NotNull
-    public static List<String> readCSV(String file) {
+    public static List<String[]> readCSV(String file) {
 
         InputStreamReader csvFile = new InputStreamReader(Objects.requireNonNull(CsvParser.class.getClassLoader().getResourceAsStream(file)));
         String fieldDelimiter = ",";
 
-        List<String> result = new ArrayList<String>();
+        List<String[]> result = new ArrayList<String[]>();
 
         BufferedReader br;
 
@@ -33,7 +33,7 @@ public class CsvParser {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] fields = line.split(fieldDelimiter, -1);
-                result.add(Arrays.toString(fields));
+                result.add(fields);
             }
 
         } catch (IOException e) {
