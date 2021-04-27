@@ -15,7 +15,7 @@ public class GameEngine implements ViewModel {
     private final static Logger logger = LogManager.getLogger(GameEngine.class);
 
     private final ArrayList<Player> players = new ArrayList<Player>();
-    private final LinkedList<Domino[]> deck = new LinkedList<>();
+    private List<Domino[]> deck = new LinkedList<>();
 
     public GameEngine(int nbPlayers) {
         List<String[]> csvRaw = CsvParser.readCSV("dominos.csv");
@@ -27,10 +27,13 @@ public class GameEngine implements ViewModel {
             this.deck.add(domino);
         }
         Collections.shuffle(this.deck);
+        this.deck = this.deck.subList(0, nbPlayers * 12);
 
         for (int i = 0; i<nbPlayers; i++) {
             this.players.add(new Player());
         }
+        logger.debug(this.deck.size());
+        logger.debug(this.players.toString());
 
     }
 
