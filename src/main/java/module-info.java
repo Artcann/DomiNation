@@ -7,6 +7,5 @@ module org.example {
     requires org.jetbrains.annotations;
 
     opens org.example to javafx.fxml;
-    opens org.example.helloWorld to javafx.fxml, de.saxsys.mvvmfx;
     exports org.example;
 }

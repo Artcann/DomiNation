@@ -3,7 +3,8 @@ package org.example.core;
 import de.saxsys.mvvmfx.ViewModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.example.util.CsvParser;
+
+import org.example.util.*;
 
 import java.util.*;
 
@@ -16,6 +17,9 @@ public class GameEngine implements ViewModel {
 
     private final ArrayList<Player> players = new ArrayList<Player>();
     private List<Domino[]> deck = new LinkedList<>();
+    private List<King> kings = new ArrayList<>();
+
+    private List<Domino[]> table = new ArrayList<>();
 
     public GameEngine(int nbPlayers) {
         List<String[]> csvRaw = CsvParser.readCSV("dominos.csv");
@@ -32,6 +36,24 @@ public class GameEngine implements ViewModel {
         for (int i = 0; i<nbPlayers; i++) {
             this.players.add(new Player());
         }
+
+        if (nbPlayers>2) {
+            for(Player p : players) {
+                kings.add(new King(p.getColor()));
+            }
+        } else {
+            for(int i = 0; i<2; i++) {
+                kings.add(new King(Color.values()[0]));
+                kings.add(new King(Color.values()[1]));
+            }
+        }
+
+        for(int i = 0; i<kings.size(); i++) {
+            this.table.add(this.deck.remove(0));
+        }
+
+        table.sort(new DominoSorter());
+
         logger.debug(this.deck.size());
         logger.debug(this.players.toString());
 

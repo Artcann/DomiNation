@@ -1,22 +1,19 @@
 package org.example.core;
 
-import javafx.beans.InvalidationListener;
-
 public class Castle extends Tile {
 
-    private String color;
+    private Color color;
 
-    public Castle(String color) {
+    public Castle(Color color) {
         this.color = color;
     }
 
-    public String getColor() {
+    public Color getColor() {
         return color;
     }
 
-    public void setColor(String color) {
+    public void setColor(Color color) {
         this.color = color;
     }
-
 
 }

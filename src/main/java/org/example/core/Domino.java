@@ -4,9 +4,10 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.jetbrains.annotations.NotNull;
 
 
-public class Domino extends Tile {
+public class Domino extends Tile implements Comparable<Domino> {
 
     private final StringProperty type = new SimpleStringProperty();
     private int number;
@@ -34,4 +35,8 @@ public class Domino extends Tile {
         return "Domino " + this.number + " : " + getType() + " " + this.nbCrown;
     }
 
+    @Override
+    public int compareTo(@NotNull Domino o) {
+        return Integer.compare(this.number, o.number);
+    }
 }
