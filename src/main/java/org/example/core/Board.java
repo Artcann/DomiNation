@@ -12,10 +12,11 @@ public class Board {
     private static final Logger logger = LogManager.getLogger(Board.class);
 
     private Tile[][] board;
-    private int size;
+    private int size = 5;
 
-    public void initialize() {
-        this.board = new Tile[this.size][this.size];
+    public Board(Castle castle) {
+        this.board = new Tile[(2*this.size)-1][(2*this.size)-1];
+        this.board[this.size-1][this.size-1] = castle;
     };
 
 
@@ -23,9 +24,16 @@ public class Board {
 
         StringBuilder strBoard = new StringBuilder();
 
+        strBoard.append("\n");
+
         for (Tile[] tiles : board) {
             for (int j = 0; j < board.length; j++) {
-                strBoard.append(tiles[j]);
+                if (tiles[j] != null) {
+                    strBoard.append(tiles[j].toString());
+                } else {
+                    strBoard.append("0");
+                }
+                strBoard.append(" | ");
             }
             strBoard.append("\n");
         }

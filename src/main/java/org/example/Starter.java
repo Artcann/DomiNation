@@ -22,7 +22,7 @@ public class Starter extends Application {
 //        stage.setScene(new Scene(root));
 //        stage.show();
 
-        GameEngine gameEngine = new GameEngine(3);
-        gameEngine.run();
+        GameEngine gameEngine = new GameEngine();
+        gameEngine.newGame(3);
     }
 }

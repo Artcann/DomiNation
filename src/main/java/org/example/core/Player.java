@@ -8,8 +8,8 @@ public class Player {
     private static int nbInstances = 0;
 
     public Player() {
-        this.board = new Board();
         this.castle = new Castle(Color.values()[nbInstances]);
+        this.board = new Board(this.castle);
         nbInstances++;
     }
 
@@ -31,6 +31,10 @@ public class Player {
 
     public Color getColor() {
         return this.castle.getColor();
+    }
+
+    public String toString() {
+        return this.castle.getColor().toString();
     }
 
 }

@@ -16,4 +16,8 @@ public class King {
     public Color getColor() { return color; }
 
     public void setColor(Color color) { this.color = color; }
+
+    public String toString() {
+        return "Color : " + this.color +"; Position :" + this.domino[0].getNumber();
+    }
 }

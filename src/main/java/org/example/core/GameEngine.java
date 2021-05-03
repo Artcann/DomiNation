@@ -15,13 +15,19 @@ public class GameEngine implements ViewModel {
 
     private final static Logger logger = LogManager.getLogger(GameEngine.class);
 
-    private final ArrayList<Player> players = new ArrayList<Player>();
+    private static List<Domino[]> sortedDeck = null;
+
+    private Player currentPlayer = null;
+
+    private final ArrayList<Player> players = new ArrayList<>();
     private List<Domino[]> deck = new LinkedList<>();
-    private List<King> kings = new ArrayList<>();
+    private final List<King> kings = new ArrayList<>();
 
-    private List<Domino[]> table = new ArrayList<>();
+    private final List<Domino[]> table = new ArrayList<>();
 
-    public GameEngine(int nbPlayers) {
+
+
+    public void newGame(int nbPlayers) {
         List<String[]> csvRaw = CsvParser.readCSV("dominos.csv");
 
         for(String[] dominos : csvRaw) {
@@ -30,12 +36,17 @@ public class GameEngine implements ViewModel {
             domino[1] = new Domino(dominos[3], Integer.parseInt(dominos[2]), Integer.parseInt(dominos[4]));
             this.deck.add(domino);
         }
+
+        sortedDeck = new ArrayList<>(deck);
+
         Collections.shuffle(this.deck);
         this.deck = this.deck.subList(0, nbPlayers * 12);
 
         for (int i = 0; i<nbPlayers; i++) {
             this.players.add(new Player());
         }
+
+        this.currentPlayer = players.get(0);
 
         if (nbPlayers>2) {
             for(Player p : players) {
@@ -52,15 +63,45 @@ public class GameEngine implements ViewModel {
             this.table.add(this.deck.remove(0));
         }
 
+        Collections.shuffle(kings);
+
+        //DEBUG ONLY
+        Integer[] kingsPosition = new Integer[3];
+        for(int i = 0; i<3; i++) {
+            kingsPosition[i] = this.table.get(i)[0].getNumber();
+        }
+
+        for(int i = 0; i<kings.size(); i++) {
+            kings.get(i).setPosition(sortedDeck.get(kingsPosition[i] - 1));
+        }
+
+        //TODO: Faire une méthode pour la pioche
+        for(int i = 0; i<kings.size(); i++) {
+            this.table.add(this.deck.remove(0));
+        }
+
         table.sort(new DominoSorter());
 
-        logger.debug(this.deck.size());
-        logger.debug(this.players.toString());
+        for(Domino[] d : this.table) {
+            logger.debug(Arrays.toString(d));
+        }
+
+        kings.sort(new KingSorter());
+
+        for(int i = 0; i<8; i++) {
+            logger.debug(this.currentPlayer.toString());
+            nextPlayer();
+        }
 
     }
+    
 
-    public void run() {
+    private boolean isGameFinished() {
+        return true;
+    }
 
+    private void nextPlayer() {
+        this.currentPlayer = this.players.get((this.players.indexOf(this.currentPlayer) + 1) % (this.players.size()));
     }
 
 }

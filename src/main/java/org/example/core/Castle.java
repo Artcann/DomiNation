@@ -16,4 +16,7 @@ public class Castle extends Tile {
         this.color = color;
     }
 
+    public String toString() {
+        return "\uD83C\uDFF0";
+    }
 }
