@@ -1,0 +1,20 @@
+Create the model with the help of Guice's Dependency Injection and JavaFX's Properties, that way we can do data binding
+which will facilitate the communication between the different Class of our Model. The main class of the Model will be
+the GameEngine, and ideally the ViewModel will only deal with this Singleton class.
+
+We don't have a lot of data to manage, I don't think we will need to use Scopes, our classes are already decoupled.
+
+We have to create a visual example of the UI we want. We can do that before or after the Model, doesn't matter that much
+but we need to do it BEFORE the ViewModel. We will have to do a lot of refactoring anyway I think so we can just start
+with anything we want.
+
+Questions :
+- Est ce que l'usage d'un Singleton pour notre GameEngine est pertinent ? Est ce qu'on créé une nouvelle instance à
+chaque nouvelle partie (implique de devoir sortir la logique d'initialisation du constructeur)
+
+- Est ce qu'on met la logique de menuing et d'initialisation du jeu dans la class Starter/Main de notre programme ?
+
+- Est ce que l'on doit créer une DAO pour la gestion d'un fichier JSON qui contiendrait les highscore des différents
+modes de jeu ? Ou un JSON parser est suffisant ?
+
+- Fichiers de config ?
