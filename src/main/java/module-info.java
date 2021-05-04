@@ -5,7 +5,9 @@ module org.example {
     requires javax.inject;
     requires org.apache.logging.log4j;
     requires org.jetbrains.annotations;
+    requires easy.di;
 
     opens org.example to javafx.fxml;
     exports org.example;
+    exports org.example.core to easy.di;
 }

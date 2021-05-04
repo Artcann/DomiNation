@@ -1,6 +1,7 @@
 package org.example.core;
 
 import de.saxsys.mvvmfx.ViewModel;
+import eu.lestard.easydi.EasyDI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +26,7 @@ public class GameEngine implements ViewModel {
 
     private final List<Domino[]> table = new ArrayList<>();
 
-
+    private final EasyDI easyDI = new EasyDI();
 
     public void newGame(int nbPlayers) {
         List<String[]> csvRaw = CsvParser.readCSV("dominos.csv");
@@ -43,7 +44,7 @@ public class GameEngine implements ViewModel {
         this.deck = this.deck.subList(0, nbPlayers * 12);
 
         for (int i = 0; i<nbPlayers; i++) {
-            this.players.add(new Player());
+            this.players.add(easyDI.getInstance(Player.class));
         }
 
         this.currentPlayer = players.get(0);
@@ -88,17 +89,14 @@ public class GameEngine implements ViewModel {
 
         kings.sort(new KingSorter());
 
-        for(int i = 0; i<8; i++) {
-            logger.debug(this.currentPlayer.toString());
-            nextPlayer();
-        }
+        Integer[][] positionTest = {{2,2}, {2,3}};
+
+        players.get(0).getBoard().placeDomino(positionTest, table.get(0));
+
+        logger.debug(players.get(0).getBoard().toString());
 
     }
-    
 
-    private boolean isGameFinished() {
-        return true;
-    }
 
     private void nextPlayer() {
         this.currentPlayer = this.players.get((this.players.indexOf(this.currentPlayer) + 1) % (this.players.size()));

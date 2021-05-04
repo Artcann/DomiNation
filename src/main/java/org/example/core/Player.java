@@ -1,15 +1,22 @@
 package org.example.core;
 
+import javax.inject.Inject;
+
 public class Player {
 
     private Board board;
+
     private Castle castle;
 
     private static int nbInstances = 0;
 
-    public Player() {
-        this.castle = new Castle(Color.values()[nbInstances]);
-        this.board = new Board(this.castle);
+    public Player(Castle castle, Board board) {
+        this.castle = castle;
+        this.board = board;
+
+        this.castle.setColor(Color.values()[nbInstances]);
+        this.board.initBoard(this.castle);
+
         nbInstances++;
     }
 
