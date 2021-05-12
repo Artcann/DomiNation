@@ -14,14 +14,14 @@ import javax.inject.Singleton;
 @Singleton
 public class GameEngine implements ViewModel {
 
-    private final static Logger logger = LogManager.getLogger(GameEngine.class);
+    private static final Logger logger = LogManager.getLogger(GameEngine.class);
 
-    private static List<Domino[]> sortedDeck = null;
+    private static List<Domino[]> sortedDeck;
 
-    private Player currentPlayer = null;
+    private Player currentPlayer;
 
     private final ArrayList<Player> players = new ArrayList<>();
-    private List<Domino[]> deck = new LinkedList<>();
+    private List<Domino[]> deck = new ArrayList<>();
     private final List<King> kings = new ArrayList<>();
 
     private final List<Domino[]> table = new ArrayList<>();
@@ -76,7 +76,7 @@ public class GameEngine implements ViewModel {
             kings.get(i).setPosition(sortedDeck.get(kingsPosition[i] - 1));
         }
 
-        //TODO: Faire une méthode pour la pioche
+        //TODO: Faire une méthode piocher un domino
         for(int i = 0; i<kings.size(); i++) {
             this.table.add(this.deck.remove(0));
         }
@@ -89,9 +89,20 @@ public class GameEngine implements ViewModel {
 
         kings.sort(new KingSorter());
 
-        Integer[][] positionTest = {{2,2}, {2,3}};
+        Integer[][] positionTest = {{3,4}, {3,5}};
+        Integer[][] positionTest2 = {{2,4}, {2,5}};
+        Integer[][] positionTest3 = {{1,4}, {1,5}};
+        Integer[][] positionTest4 = {{0,4}, {0,5}};
+        Integer[][] positionTest5 = {{5,4}, {5,5}};
 
-        players.get(0).getBoard().placeDomino(positionTest, table.get(0));
+        players.get(0).getBoard().placeDomino(positionTest, sortedDeck.get(4));
+        players.get(0).getBoard().placeDomino(positionTest2, sortedDeck.get(28));
+        players.get(0).getBoard().placeDomino(positionTest3, sortedDeck.get(5));
+        players.get(0).getBoard().placeDomino(positionTest4, sortedDeck.get(24));
+        players.get(0).getBoard().placeDomino(positionTest5, sortedDeck.get(1));
+        logger.debug(players.get(0).getBoard().computeScore());
+
+        logger.debug(Arrays.toString(players.get(0).getBoard().getBorder()));
 
         logger.debug(players.get(0).getBoard().toString());
 
@@ -102,4 +113,31 @@ public class GameEngine implements ViewModel {
         this.currentPlayer = this.players.get((this.players.indexOf(this.currentPlayer) + 1) % (this.players.size()));
     }
 
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    public List<Domino[]> getDeck() {
+        return deck;
+    }
+
+    public void setDeck(List<Domino[]> deck) {
+        this.deck = deck;
+    }
+
+    public List<King> getKings() {
+        return kings;
+    }
+
+    public List<Domino[]> getTable() {
+        return table;
+    }
 }

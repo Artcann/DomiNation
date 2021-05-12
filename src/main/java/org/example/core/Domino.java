@@ -2,8 +2,6 @@ package org.example.core;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -19,6 +17,7 @@ public class Domino extends Tile implements Comparable<Domino> {
         this.number = number;
     }
 
+    @Override
     public String getType() { return type.get(); }
 
     public void setType(String type) { this.type.set(type); }

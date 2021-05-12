@@ -15,4 +15,9 @@ public class Castle extends Tile {
     public String toString() {
         return "\uD83C\uDFF0";
     }
+
+    @Override
+    public String getType() {
+        return "Castle";
+    }
 }

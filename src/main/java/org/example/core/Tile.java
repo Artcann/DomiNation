@@ -4,23 +4,18 @@ package org.example.core;
 
 public class Tile {
 
-    protected int x;
-    protected int y;
+    protected Integer[] position;
 
-    public int getX() {
-        return this.x;
+    public Integer[] getPosition() {
+        return position;
     }
 
-    public int getY() {
-        return this.y;
+    public void setPosition(Integer[] position) {
+        this.position = position;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
+    public String getType() {
+        return "Tile";
     }
 
 }

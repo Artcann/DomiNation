@@ -26,9 +26,6 @@ public class ReadPropertyFile {
                 throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
             }
 
-            Date time = new Date(System.currentTimeMillis());
-
-            // get the property value and print it out
             result += prop.getProperty(key);
         } catch (Exception e) {
             System.out.println("Exception: " + e);
