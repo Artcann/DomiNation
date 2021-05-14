@@ -36,7 +36,8 @@ public class Board {
             }
         }
         this.boardArr[this.size-1][this.size-1] = castle;
-
+        Integer[] castlePosition = {4, 4};
+        castle.setPosition(castlePosition);
     }
 
     public int computeScore() {
@@ -234,4 +235,7 @@ public class Board {
         return strBoard.toString();
     }
 
+    public Tile[][] getBoardArr() {
+        return this.boardArr;
+    }
 }

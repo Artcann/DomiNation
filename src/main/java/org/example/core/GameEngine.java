@@ -11,8 +11,7 @@ import java.util.*;
 
 import javax.inject.Singleton;
 
-@Singleton
-public class GameEngine implements ViewModel {
+public class GameEngine {
 
     private static final Logger logger = LogManager.getLogger(GameEngine.class);
 
@@ -27,6 +26,10 @@ public class GameEngine implements ViewModel {
     private final List<Domino[]> table = new ArrayList<>();
 
     private final EasyDI easyDI = new EasyDI();
+
+    public GameEngine() {
+        logger.debug("GameEngine Created");
+    }
 
     public void newGame(int nbPlayers) {
         List<String[]> csvRaw = CsvParser.readCSV("dominos.csv");
@@ -109,7 +112,7 @@ public class GameEngine implements ViewModel {
     }
 
 
-    private void nextPlayer() {
+    public void nextPlayer() {
         this.currentPlayer = this.players.get((this.players.indexOf(this.currentPlayer) + 1) % (this.players.size()));
     }
 
