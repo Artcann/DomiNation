@@ -9,19 +9,27 @@ public class Domino extends Tile implements Comparable<Domino> {
 
     private final StringProperty type = new SimpleStringProperty();
     private int number;
+    private int index;
     private int nbCrown;
 
-    public Domino(String type, int nbCrown, int number) {
+    public Domino(String type, int nbCrown, int number, int index) {
         setType(type);
         this.nbCrown = nbCrown;
         this.number = number;
+        this.index = index;
     }
 
     @Override
     public String getType() { return type.get(); }
 
+    @Override
+    public int getIndex() {
+        return this.index;
+    }
+
     public void setType(String type) { this.type.set(type); }
 
+    @Override
     public int getNumber() { return number; }
 
     public void setNumber(int number) { this.number = number; }

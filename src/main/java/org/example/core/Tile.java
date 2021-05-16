@@ -18,4 +18,12 @@ public class Tile {
         return "Tile";
     }
 
+    public int getIndex() {
+        return 0;
+    }
+
+    public int getNumber() {
+        return 0;
+    }
+
 }

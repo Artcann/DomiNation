@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.example.core.GameEngine;
+import org.example.util.Ressource;
 import org.example.view.main.MainViewModel;
 import org.example.view.menu.MenuView;
 import org.example.view.menu.MenuViewModel;
@@ -32,6 +33,8 @@ public class Starter extends Application {
         MvvmFX.setCustomDependencyInjector(easyDI::getInstance);
 
         primaryStage = stage;
+
+        Ressource.loadRessources();
 
         stage.setTitle("Domi-Nation");
 

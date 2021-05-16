@@ -2,6 +2,9 @@ package org.example.core;
 
 import de.saxsys.mvvmfx.ViewModel;
 import eu.lestard.easydi.EasyDI;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,7 +26,7 @@ public class GameEngine {
     private List<Domino[]> deck = new ArrayList<>();
     private final List<King> kings = new ArrayList<>();
 
-    private final List<Domino[]> table = new ArrayList<>();
+    private final ObservableList<Domino[]> table = FXCollections.observableArrayList();
 
     private final EasyDI easyDI = new EasyDI();
 
@@ -36,8 +39,8 @@ public class GameEngine {
 
         for(String[] dominos : csvRaw) {
             Domino[] domino = new Domino[2];
-            domino[0] = new Domino(dominos[1], Integer.parseInt(dominos[0]), Integer.parseInt(dominos[4]));
-            domino[1] = new Domino(dominos[3], Integer.parseInt(dominos[2]), Integer.parseInt(dominos[4]));
+            domino[0] = new Domino(dominos[1], Integer.parseInt(dominos[0]), Integer.parseInt(dominos[4]), 0);
+            domino[1] = new Domino(dominos[3], Integer.parseInt(dominos[2]), Integer.parseInt(dominos[4]), 1);
             this.deck.add(domino);
         }
 
@@ -114,6 +117,11 @@ public class GameEngine {
 
     public void nextPlayer() {
         this.currentPlayer = this.players.get((this.players.indexOf(this.currentPlayer) + 1) % (this.players.size()));
+        for(int i = 0; i<kings.size(); i++) {
+            this.table.remove(0);
+            this.table.add(this.deck.remove(0));
+        }
+        this.table.sort(new DominoSorter());
     }
 
     public Player getCurrentPlayer() {
@@ -142,5 +150,9 @@ public class GameEngine {
 
     public List<Domino[]> getTable() {
         return table;
+    }
+
+    public SimpleListProperty<Domino[]> getTableProperty() {
+        return new SimpleListProperty<Domino[]>(this.table);
     }
 }

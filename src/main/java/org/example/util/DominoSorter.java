@@ -2,8 +2,10 @@ package org.example.util;
 
 import org.example.core.Domino;
 
+import javax.inject.Singleton;
 import java.util.Comparator;
 
+@Singleton
 public class DominoSorter implements Comparator<Domino[]> {
 
     @Override
