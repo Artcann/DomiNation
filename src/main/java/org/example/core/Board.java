@@ -56,6 +56,12 @@ public class Board {
         return score;
     }
 
+    public int simuleScore(Integer[][] move, Domino[] domino){
+        int score = 0;
+            // to complete
+        return score;
+    }
+
     public int computeArea(Domino startingNode, Set<Tile> exploredNode) {
         Deque<Domino> stack = new ArrayDeque<>();
         stack.push(startingNode);
