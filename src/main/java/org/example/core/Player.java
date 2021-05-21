@@ -1,7 +1,5 @@
 package org.example.core;
 
-import javax.inject.Inject;
-
 public class Player {
 
     private Board board;

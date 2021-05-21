@@ -4,7 +4,6 @@ import javax.inject.Singleton;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.Properties;
 
 @Singleton
@@ -26,9 +25,6 @@ public class ReadPropertyFile {
                 throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
             }
 
-            Date time = new Date(System.currentTimeMillis());
-
-            // get the property value and print it out
             result += prop.getProperty(key);
         } catch (Exception e) {
             System.out.println("Exception: " + e);

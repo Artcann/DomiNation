@@ -3,8 +3,10 @@ package org.example.util;
 import org.example.core.Domino;
 import org.example.core.King;
 
+import javax.inject.Singleton;
 import java.util.Comparator;
 
+@Singleton
 public class KingSorter implements Comparator<King> {
 
     @Override
