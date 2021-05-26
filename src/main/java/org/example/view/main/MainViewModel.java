@@ -54,6 +54,10 @@ public class MainViewModel implements ViewModel {
         }
     }
 
+    public boolean makeMove(Integer[][] move, Domino[] domino) {
+        return gameEngine.getCurrentPlayer().getBoard().placeDomino(move, domino);
+    }
+
     public Color getColor() {
         return gameEngine.getCurrentPlayer().getColor();
     }

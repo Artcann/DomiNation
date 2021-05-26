@@ -89,28 +89,29 @@ public class GameEngine {
 
         table.sort(new DominoSorter());
 
-        for(Domino[] d : this.table) {
-            logger.debug(Arrays.toString(d));
-        }
+//        for(Domino[] d : this.table) {
+//            logger.debug(Arrays.toString(d));
+//        }
 
         kings.sort(new KingSorter());
 
-        Integer[][] positionTest = {{3,4}, {3,5}};
-        Integer[][] positionTest2 = {{2,4}, {2,5}};
-        Integer[][] positionTest3 = {{1,4}, {1,5}};
-        Integer[][] positionTest4 = {{0,4}, {0,5}};
-        Integer[][] positionTest5 = {{5,4}, {5,5}};
-
-        players.get(0).getBoard().placeDomino(positionTest, sortedDeck.get(4));
-        players.get(0).getBoard().placeDomino(positionTest2, sortedDeck.get(28));
-        players.get(0).getBoard().placeDomino(positionTest3, sortedDeck.get(5));
-        players.get(0).getBoard().placeDomino(positionTest4, sortedDeck.get(24));
-        players.get(0).getBoard().placeDomino(positionTest5, sortedDeck.get(1));
-        logger.debug(players.get(0).getBoard().computeScore());
-
-        logger.debug(Arrays.toString(players.get(0).getBoard().getBorder()));
-
-        logger.debug(players.get(0).getBoard().toString());
+//        Integer[][] positionTest = {{3,4}, {3,5}};
+//        Integer[][] positionTest2 = {{2,4}, {2,5}};
+//        Integer[][] positionTest3 = {{1,4}, {1,5}};
+//        Integer[][] positionTest4 = {{0,4}, {0,5}};
+//        Integer[][] positionTest5 = {{5,4}, {5,5}};
+//
+//        players.get(0).getBoard().placeDomino(positionTest, sortedDeck.get(4));
+//        players.get(0).getBoard().placeDomino(positionTest2, sortedDeck.get(28));
+//        players.get(0).getBoard().placeDomino(positionTest3, sortedDeck.get(5));
+//        players.get(0).getBoard().placeDomino(positionTest4, sortedDeck.get(24));
+//        players.get(0).getBoard().placeDomino(positionTest5, sortedDeck.get(1));
+        
+//        logger.debug(players.get(0).getBoard().computeScore());
+//
+//        logger.debug(Arrays.toString(players.get(0).getBoard().getBorder()));
+//
+//        logger.debug(players.get(0).getBoard().toString());
 
     }
 

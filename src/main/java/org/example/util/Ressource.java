@@ -4,8 +4,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import org.example.core.Color;
 
+import javax.inject.Singleton;
 import java.util.Objects;
 
+@Singleton
 public class Ressource {
 
     private static Image blueCastle;
@@ -15,11 +17,14 @@ public class Ressource {
 
     private static Image recto;
 
+    private static Image white;
+
     public static void loadRessources() {
         blueCastle = new Image(Objects.requireNonNull(Ressource.class.getClassLoader().getResourceAsStream("blueCastle.png")));
         pinkCastle = new Image(Objects.requireNonNull(Ressource.class.getClassLoader().getResourceAsStream("pinkCastle.png")));
 
         recto = new Image(Objects.requireNonNull(Ressource.class.getClassLoader().getResourceAsStream("recto.png")));
+        white = new Image(Objects.requireNonNull(Ressource.class.getClassLoader().getResourceAsStream("white.png")));
     }
 
     public static Image getCastleImage(Color color) {
@@ -30,6 +35,10 @@ public class Ressource {
                 return pinkCastle;
         }
         return null;
+    }
+
+    public static Image getWhite() {
+        return white;
     }
 
     public static Image getVerso(Integer number) {

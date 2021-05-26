@@ -78,17 +78,24 @@ public class Board {
         return nbCrowns * sizeOfArea;
     }
 
-    public void placeDomino(Integer[][] positions, Domino[] domino) {
-        if(isValidMove(positions, domino)) {
-            this.boardArr[positions[0][0]][positions[0][1]] = domino[0];
-            this.boardArr[positions[1][0]][positions[1][1]] = domino[1];
-            domino[0].setPosition(positions[0]);
-            domino[1].setPosition(positions[1]);
-            updateBoardLimit(positions[0]);
-            updateBoardLimit(positions[1]);
+    public boolean placeDomino(Integer[][] positions, Domino[] domino) {
+        try {
+            if (isValidMove(positions, domino)) {
+                this.boardArr[positions[0][0]][positions[0][1]] = domino[0];
+                this.boardArr[positions[1][0]][positions[1][1]] = domino[1];
+                domino[0].setPosition(positions[0]);
+                domino[1].setPosition(positions[1]);
+                updateBoardLimit(positions[0]);
+                updateBoardLimit(positions[1]);
+                return true;
 
-        } else {
-            logger.error("The move is not valid");
+            } else {
+                logger.error("The move is not valid");
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -173,22 +180,22 @@ public class Board {
         }
 
         // Handle Borders
-        else if(position[0] == this.topBorder) {
+        else if(position[0] == this.topBorder || position[1] == this.topBorder) {
             neighborsList.add(boardArr[position[0] + 1][position[1]]);
             neighborsList.add(boardArr[position[0]][position[1] - 1]);
             neighborsList.add(boardArr[position[0]][position[1] + 1]);
         }
-        else if(position[0] == this.bottomBorder) {
+        else if(position[0] == this.bottomBorder || position[1] == this.bottomBorder) {
             neighborsList.add(boardArr[position[0] - 1][position[1]]);
             neighborsList.add(boardArr[position[0]][position[1] + 1]);
             neighborsList.add(boardArr[position[0]][position[1] - 1]);
         }
-        else if(position[0] == this.leftBorder) {
+        else if(position[0] == this.leftBorder || position[1] == this.leftBorder) {
             neighborsList.add(boardArr[position[0] + 1][position[1]]);
             neighborsList.add(boardArr[position[0] - 1][position[1]]);
             neighborsList.add(boardArr[position[0]][position[1] + 1]);
         }
-        else if(position[0] == this.rightBorder) {
+        else if(position[0] == this.rightBorder || position[1] == this.rightBorder) {
             neighborsList.add(boardArr[position[0] + 1][position[1]]);
             neighborsList.add(boardArr[position[0] - 1][position[1]]);
             neighborsList.add(boardArr[position[0]][position[1] - 1]);

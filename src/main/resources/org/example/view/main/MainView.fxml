@@ -46,5 +46,6 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
       </GridPane>
+      <Label fx:id="selectedTileLabel" layoutX="155.0" layoutY="947.0" prefHeight="30.0" prefWidth="160.0" text="Label" />
    </children>
 </Pane>
