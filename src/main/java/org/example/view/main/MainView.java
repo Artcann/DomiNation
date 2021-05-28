@@ -131,7 +131,7 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 
                         if(selectedTile != null) {
                             Optional<String> result = chooseOrientation.showAndWait();
-                            result.ifPresent(string -> {
+                            result.ifPresentOrElse(string -> {
                                 switch (string) {
                                     case "Up":
                                         secondTileCoordinate[0] = rowIndex-1;
@@ -150,6 +150,8 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
                                         secondTileCoordinate[1] = columnIndex+1;
                                         break;
                                 }
+                            }, () -> {
+                                throw new RuntimeException();
                             });
                         }
 
@@ -163,6 +165,7 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
                             alert.show();
                         } else {
                             logger.debug("Domino Placed Successfully");
+                            viewModel.nextPlayer();
                             viewModel.updateBoard();
                         }
 
