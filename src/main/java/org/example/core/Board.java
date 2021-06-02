@@ -86,10 +86,10 @@ public class Board {
                 this.boardArr[positions[1][0]][positions[1][1]] = domino[1];
 
                 domino[0].setPosition(positions[0]);
-                //updateBoardLimit(positions[0]);
+                updateBoardLimit(positions[0]);
 
                 domino[1].setPosition(positions[1]);
-                //updateBoardLimit(positions[1]);
+                updateBoardLimit(positions[1]);
                 return true;
 
             } else {

@@ -165,7 +165,7 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
                             alert.show();
                         } else {
                             logger.debug("Domino Placed Successfully");
-                            viewModel.nextPlayer();
+                            //viewModel.nextPlayer();
                             viewModel.updateBoard();
                         }
 

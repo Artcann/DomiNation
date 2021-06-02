@@ -63,6 +63,10 @@ public class Ressource {
         int row = (number - 1) % 8;
         int column = number / 8;
 
+        if(number%8 == 0) {
+            column--;
+        }
+
         if(index == 0) {
             return new WritableImage(recto.getPixelReader(), 26 + (column * 215), 26 + (row * 117), 103, 103);
         } else {
