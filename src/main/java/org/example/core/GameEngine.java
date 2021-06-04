@@ -1,9 +1,10 @@
 package org.example.core;
 
-import de.saxsys.mvvmfx.ViewModel;
 import eu.lestard.easydi.EasyDI;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,29 +13,38 @@ import org.example.util.*;
 
 import java.util.*;
 
-import javax.inject.Singleton;
-
 public class GameEngine {
 
     private static final Logger logger = LogManager.getLogger(GameEngine.class);
 
-    private static List<Domino[]> sortedDeck;
+    private final EasyDI easyDI = new EasyDI();
 
     private Player currentPlayer;
 
-    private final ArrayList<Player> players = new ArrayList<>();
-    private List<Domino[]> deck = new ArrayList<>();
-    private final List<King> kings = new ArrayList<>();
+    private ArrayList<Player> players;
+    private ObservableList<Domino[]> deck;
 
-    private final ObservableList<Domino[]> table = FXCollections.observableArrayList();
+    private ObservableList<Domino[]> table;
 
-    private final EasyDI easyDI = new EasyDI();
+
 
     public GameEngine() {
         logger.debug("GameEngine Created");
     }
 
+
+
     public void newGame(int nbPlayers) {
+        logger.debug("New Game");
+        Player.resetInstances();
+
+        this.players = new ArrayList<>();
+        List<King> kings = new ArrayList<>();
+        this.deck = FXCollections.observableArrayList();
+
+        this.table = FXCollections.observableArrayList();
+
+
         List<String[]> csvRaw = CsvParser.readCSV("dominos.csv");
 
         for(String[] dominos : csvRaw) {
@@ -44,10 +54,16 @@ public class GameEngine {
             this.deck.add(domino);
         }
 
-        sortedDeck = new ArrayList<>(deck);
+        List<Domino[]> sortedDeck = new ArrayList<>(deck);
 
         Collections.shuffle(this.deck);
-        this.deck = this.deck.subList(0, nbPlayers * 12);
+        this.deck = FXCollections.observableArrayList(this.deck.subList(0, nbPlayers * 12));
+
+        this.deck.addListener((ListChangeListener<Domino[]>) change -> {
+            if(deck.isEmpty()) {
+                logger.debug("Le jeu est fini");
+            }
+        });
 
         for (int i = 0; i<nbPlayers; i++) {
             this.players.add(easyDI.getInstance(Player.class));
@@ -66,7 +82,7 @@ public class GameEngine {
             }
         }
 
-        for(int i = 0; i<kings.size(); i++) {
+        for(int i = 0; i< kings.size(); i++) {
             this.table.add(this.deck.remove(0));
         }
 
@@ -78,82 +94,43 @@ public class GameEngine {
             kingsPosition[i] = this.table.get(i)[0].getNumber();
         }
 
-        for(int i = 0; i<kings.size(); i++) {
+        for(int i = 0; i< kings.size(); i++) {
             kings.get(i).setPosition(sortedDeck.get(kingsPosition[i] - 1));
         }
 
         //TODO: Faire une méthode piocher un domino
-        for(int i = 0; i<kings.size(); i++) {
+        for(int i = 0; i< kings.size(); i++) {
             this.table.add(this.deck.remove(0));
         }
 
         table.sort(new DominoSorter());
 
-//        for(Domino[] d : this.table) {
-//            logger.debug(Arrays.toString(d));
-//        }
-
         kings.sort(new KingSorter());
 
-//        Integer[][] positionTest = {{3,4}, {3,5}};
-//        Integer[][] positionTest2 = {{2,4}, {2,5}};
-//        Integer[][] positionTest3 = {{1,4}, {1,5}};
-//        Integer[][] positionTest4 = {{0,4}, {0,5}};
-//        Integer[][] positionTest5 = {{5,4}, {5,5}};
-//
-//        players.get(0).getBoard().placeDomino(positionTest, sortedDeck.get(4));
-//        players.get(0).getBoard().placeDomino(positionTest2, sortedDeck.get(28));
-//        players.get(0).getBoard().placeDomino(positionTest3, sortedDeck.get(5));
-//        players.get(0).getBoard().placeDomino(positionTest4, sortedDeck.get(24));
-//        players.get(0).getBoard().placeDomino(positionTest5, sortedDeck.get(1));
-        
-//        logger.debug(players.get(0).getBoard().computeScore());
-//
-//        logger.debug(Arrays.toString(players.get(0).getBoard().getBorder()));
-//
-//        logger.debug(players.get(0).getBoard().toString());
 
     }
-
 
     public void nextPlayer() {
         this.currentPlayer = this.players.get((this.players.indexOf(this.currentPlayer) + 1) % (this.players.size()));
-        for(int i = 0; i<kings.size(); i++) {
-            this.table.remove(0);
-            this.table.add(this.deck.remove(0));
-        }
+        this.table.add(this.deck.remove(0));
         this.table.sort(new DominoSorter());
     }
+
+    // Getters and Setters
 
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
 
-    public void setCurrentPlayer(Player currentPlayer) {
-        this.currentPlayer = currentPlayer;
-    }
-
-    public ArrayList<Player> getPlayers() {
-        return players;
-    }
-
-    public List<Domino[]> getDeck() {
+    public ObservableList<Domino[]> getDeck() {
         return deck;
     }
 
-    public void setDeck(List<Domino[]> deck) {
-        this.deck = deck;
-    }
-
-    public List<King> getKings() {
-        return kings;
-    }
-
-    public List<Domino[]> getTable() {
+    public ObservableList<Domino[]> getTable() {
         return table;
     }
 
-    public SimpleListProperty<Domino[]> getTableProperty() {
-        return new SimpleListProperty<Domino[]>(this.table);
+    public Property<ObservableList<Domino[]>> getTableProperty() {
+        return new SimpleListProperty<>(this.table);
     }
 }

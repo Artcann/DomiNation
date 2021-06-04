@@ -1,6 +1,5 @@
 package org.example.util;
 
-import org.example.core.Domino;
 import org.example.core.King;
 
 import javax.inject.Singleton;

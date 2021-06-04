@@ -9,7 +9,7 @@ public class Domino extends Tile implements Comparable<Domino> {
 
     private final StringProperty type = new SimpleStringProperty();
     private int number;
-    private int index;
+    private final int index;
     private int nbCrown;
 
     public Domino(String type, int nbCrown, int number, int index) {

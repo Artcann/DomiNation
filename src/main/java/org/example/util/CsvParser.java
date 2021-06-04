@@ -2,14 +2,11 @@ package org.example.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.example.core.Board;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +20,7 @@ public class CsvParser {
         InputStreamReader csvFile = new InputStreamReader(Objects.requireNonNull(CsvParser.class.getClassLoader().getResourceAsStream(file)));
         String fieldDelimiter = ",";
 
-        List<String[]> result = new ArrayList<String[]>();
+        List<String[]> result = new ArrayList<>();
 
         BufferedReader br;
 

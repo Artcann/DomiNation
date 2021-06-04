@@ -60,16 +60,16 @@ public class Board {
     public int computeArea(Domino startingNode, Set<Tile> exploredNode) {
         Deque<Domino> stack = new ArrayDeque<>();
         stack.push(startingNode);
-        exploredNode.add(startingNode);
         var nbCrowns = 0;
         var sizeOfArea = 0;
         while(!stack.isEmpty()) {
             Domino current = stack.pop();
-            exploredNode.add(current);
             if(current.getType().equals(startingNode.getType())) {
+                exploredNode.add(current);
                 nbCrowns += current.getNbCrown();
                 sizeOfArea++;
-                for(Tile domino : getNeighbors(current)) {
+                List<Tile> neighbors = getNeighbors(current);
+                for(Tile domino : neighbors) {
                     if(domino != null && domino.getClass() != Castle.class && !exploredNode.contains(domino)) {
                         stack.push((Domino) domino);
                     }
