@@ -7,12 +7,13 @@ import java.util.*;
 
 public class Ia extends Player{
 
-
     ArrayList<Integer[][]> allMove = new ArrayList<>();
     ArrayList<Integer[][]> allLegalMove = new ArrayList<>();
+    Integer[][] move;
     Integer[][] bestMove;
     Domino[] bestDomino;
     Board board = new Board();
+    GameEngine jeu = new GameEngine();
 
 
     public Ia(Castle castle, Board board) throws IOException {
@@ -21,9 +22,11 @@ public class Ia extends Player{
 
 
     private ArrayList<Integer[][]> allMove(Domino[] domino){
-
-                    // => [[[0,1], [0,2]], [[1,1], [1,2]], [[2,1], [1,1]] ... ]
-
+        for(int i = 0; i < 10; i++){
+            for(int j = 0; j < 10; j++){ // ca marche vraiment ce truc ?
+                move[i][j] = i;
+            }
+        }
         return allMove;
     }
 
@@ -33,9 +36,6 @@ public class Ia extends Player{
             if(this.board.isValidMove(move, domino)){
                 allLegalMove.add(move);
             }
-            else {
-
-            }
         }
         return allLegalMove;
     }
@@ -43,8 +43,7 @@ public class Ia extends Player{
 
     private Integer[][] bestMove(Domino[] domino){
         for(Integer[][] move: allLegalMove){
-            board.simuleScore(move, domino);
-            // sort allLegalMove by growing simuleScore -> Use a sort algorithm from moodle course
+            int score = board.simuleScore(move, domino);
             // bestMove = last element of allLegalMove after sorting
         }
         return bestMove;
@@ -53,9 +52,8 @@ public class Ia extends Player{
 
     private Domino[] bestDomino(){
         // Select the best domino by comparing best move from each domino
-        Domino[] table = getTable();
-        for(Domino domino : table){
-            //bestDomino = max(bestMove(domino))
+        List<Domino[]> table = jeu.getTable();
+        for(Domino[] domino : table){
         }
         return bestDomino;
     }
