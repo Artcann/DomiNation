@@ -1,29 +1,63 @@
 package org.example.view.main;
 
+import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.ViewModel;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import de.saxsys.mvvmfx.ViewTuple;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import org.example.Starter;
 import org.example.core.*;
-
-import javax.inject.Inject;
+import org.example.view.menu.MenuView;
 
 public class MainViewModel implements ViewModel {
 
-    private ObservableList<Tile> observableBoard = FXCollections.observableArrayList();
+    private final ObservableList<Tile> observableBoard = FXCollections.observableArrayList();
 
-    private SimpleListProperty<Domino[]> observableTable = new SimpleListProperty<>();
+    private final SimpleListProperty<Domino[]> observableTable = new SimpleListProperty<>();
 
-    private GameEngine gameEngine;
+    private final GameEngine gameEngine;
 
-    private StringProperty currentPlayer = new SimpleStringProperty();
+    private final StringProperty currentPlayer = new SimpleStringProperty();
+
+    private final StringProperty playerScore = new SimpleStringProperty();
+
+
 
     public MainViewModel(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
         currentPlayer.set(gameEngine.getCurrentPlayer().getColor().toString());
         this.observableTable.bindBidirectional(gameEngine.getTableProperty());
+        gameEngine.getDeck().addListener((ListChangeListener<Domino[]>) change -> {
+            if(gameEngine.getDeck().isEmpty()) {
+                ViewTuple viewTuple = FluentViewLoader.fxmlView(MenuView.class).load();
+
+                Parent root = viewTuple.getView();
+
+                Starter.getPrimaryStage().setScene(new Scene(root));
+            }
+        });
+
+        updateScore();
+    }
+
+    public String getPlayerScore() {
+        return playerScore.get();
+    }
+
+    public StringProperty playerScoreProperty() {
+        return playerScore;
+    }
+
+    public void setPlayerScore(int playerScore) {
+        this.playerScore.set(String.valueOf(playerScore));
+    }
+
+    public void updateScore() {
+        this.playerScore.set(String.valueOf(gameEngine.getCurrentPlayer().getBoard().computeScore()));
     }
 
     public ObservableList<Tile> getObservableBoard() {
@@ -54,16 +88,31 @@ public class MainViewModel implements ViewModel {
         }
     }
 
+    public boolean makeMove(Integer[][] move, Domino[] domino) {
+        if(gameEngine.getCurrentPlayer().getBoard().placeDomino(move, domino)) {
+            gameEngine.getTable().remove(domino);
+            return true;
+        }
+        return false;
+    }
+
     public Color getColor() {
         return gameEngine.getCurrentPlayer().getColor();
     }
 
     public void nextPlayer() {
+        observableTable.remove(0);
         gameEngine.nextPlayer();
+        updateScore();
+        updateBoard();
         currentPlayer.set(gameEngine.getCurrentPlayer().getColor().toString());
     }
 
     public StringProperty currentPlayerProperty() {
         return currentPlayer;
+    }
+
+    public GameEngine getGameEngine() {
+        return gameEngine;
     }
 }

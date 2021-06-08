@@ -20,22 +20,23 @@ public class Board {
 
     public Board() throws IOException {
         ReadPropertyFile properties = new ReadPropertyFile();
-        this.size = Integer.parseInt(properties.getPropValues("size"));
-        this.topBorder = 0;
-        this.bottomBorder = size - 1;
-        this.leftBorder = 0;
-        this.rightBorder = size - 1;
+        this.size = (2 * Integer.parseInt(properties.getPropValues("size"))) - 1;
+        //TODO Make this scalable
+        this.topBorder = 2;
+        this.bottomBorder = 6;
+        this.leftBorder = 2;
+        this.rightBorder = 6;
     }
 
 
     public void initBoard(Castle castle) {
-        this.boardArr = new Tile[(2*this.size)-1][(2*this.size)-1];
+        this.boardArr = new Tile[this.size][this.size];
         for(int i = 0; i < boardArr.length; i++) {
             for(int j = 0; j < boardArr.length; j++) {
                 this.boardArr[i][j] = null;
             }
         }
-        this.boardArr[this.size-1][this.size-1] = castle;
+        this.boardArr[(this.size+1) / 2 - 1][(this.size+1) / 2 - 1] = castle;
         Integer[] castlePosition = {4, 4};
         castle.setPosition(castlePosition);
     }
@@ -59,16 +60,16 @@ public class Board {
     public int computeArea(Domino startingNode, Set<Tile> exploredNode) {
         Deque<Domino> stack = new ArrayDeque<>();
         stack.push(startingNode);
-        exploredNode.add(startingNode);
         var nbCrowns = 0;
         var sizeOfArea = 0;
         while(!stack.isEmpty()) {
             Domino current = stack.pop();
-            exploredNode.add(current);
             if(current.getType().equals(startingNode.getType())) {
+                exploredNode.add(current);
                 nbCrowns += current.getNbCrown();
                 sizeOfArea++;
-                for(Tile domino : getNeighbors(current)) {
+                List<Tile> neighbors = getNeighbors(current);
+                for(Tile domino : neighbors) {
                     if(domino != null && domino.getClass() != Castle.class && !exploredNode.contains(domino)) {
                         stack.push((Domino) domino);
                     }
@@ -78,30 +79,30 @@ public class Board {
         return nbCrowns * sizeOfArea;
     }
 
-    public void placeDomino(Integer[][] positions, Domino[] domino) {
-        if(isValidMove(positions, domino)) {
-            this.boardArr[positions[0][0]][positions[0][1]] = domino[0];
-            this.boardArr[positions[1][0]][positions[1][1]] = domino[1];
-            domino[0].setPosition(positions[0]);
-            domino[1].setPosition(positions[1]);
-            updateBoardLimit(positions[0]);
-            updateBoardLimit(positions[1]);
+    public boolean placeDomino(Integer[][] positions, Domino[] domino) {
+        try {
+            if (isValidMove(positions, domino)) {
+                this.boardArr[positions[0][0]][positions[0][1]] = domino[0];
+                this.boardArr[positions[1][0]][positions[1][1]] = domino[1];
 
-        } else {
-            logger.error("The move is not valid");
+                domino[0].setPosition(positions[0]);
+                updateBoardLimit(positions[0]);
+
+                domino[1].setPosition(positions[1]);
+                updateBoardLimit(positions[1]);
+                return true;
+
+            } else {
+                logger.error("The move is not valid");
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     public boolean isValidMove(Integer[][] move, Domino[] domino) {
-
-        if(!(isDominoInside(move[0]) && isDominoInside(move[1]))) {
-            logger.error("The domino is outside the kingdom");
-        } else if(!(isTileEmpty(move[0]) && isTileEmpty(move[1]))) {
-            logger.error("The tile is not empty");
-        } else if(!(hasSameTypeNeighbor(move[0], domino[0]) || hasSameTypeNeighbor(move[1], domino[1]))) {
-            logger.error("The domino is not placed near a domino of same type");
-        }
-
         return isDominoInside(move[0])
                 && isDominoInside(move[1])
                 && isTileEmpty(move[0])
@@ -115,26 +116,43 @@ public class Board {
     }
 
     private boolean isDominoInside(Integer[] cell) {
-        if(cell[0] > this.boardArr.length || cell[1] > this.boardArr.length || cell[0] < 0 || cell[1] < 0) {
+        if (!(cell[0] >= this.bottomBorder||
+                cell[1] >= this.rightBorder ||
+                cell[0] <= this.topBorder ||
+                cell[1] <= this.leftBorder)) {
+            updateBoardLimit(cell);
+            return true;
+        } else {
             return false;
         }
-
-        int mostLeftPosition = cell[1] > this.leftBorder ? cell[1] : this.leftBorder;
-        int mostRightPosition = cell[1] < this.rightBorder ? cell[1] : this.rightBorder;
-        int highestPosition = cell[0] > this.topBorder ? cell[0] : this.topBorder;
-        int lowestPosition = cell[0] < this.bottomBorder ? cell[0] : this.bottomBorder;
-
-        int width = mostRightPosition - mostLeftPosition;
-        int heigh = lowestPosition - highestPosition;
-
-        return (width < 5 && heigh < 5);
     }
 
     private void updateBoardLimit(Integer[] cell) {
-        this.leftBorder = cell[1] < this.leftBorder ? cell[1] : this.leftBorder;
-        this.rightBorder = cell[1] > this.rightBorder ? cell[1] : this.rightBorder;
-        this.topBorder = cell[0] < this.topBorder ? cell[0] : this.topBorder;
-        this.bottomBorder = cell[0] > this.bottomBorder ? cell[0] : this.bottomBorder;
+        this.leftBorder = (cell[1] == this.leftBorder + 1 && this.rightBorder - this.leftBorder <= 7) ? this.leftBorder - 1 : this.leftBorder;
+        this.rightBorder = (cell[1] == this.rightBorder - 1 && this.rightBorder - this.leftBorder <= 7) ? this.rightBorder + 1 : this.rightBorder;
+        this.topBorder = (cell[0] == this.topBorder + 1 && this.bottomBorder - this.topBorder <= 7) ? this.topBorder - 1: this.topBorder;
+        this.bottomBorder = (cell[0] == this.bottomBorder - 1 && this.bottomBorder - this.topBorder <= 7) ? this.bottomBorder + 1 : this.bottomBorder;
+
+        if(this.topBorder == -2) {
+            this.topBorder = -1;
+            this.bottomBorder = 5;
+        }
+        if(this.bottomBorder == 10) {
+            this.bottomBorder = 9;
+            this.topBorder = 3;
+        }
+        if(this.leftBorder == -2) {
+            this.leftBorder = -1;
+            this.rightBorder = 5;
+        }
+        if(this.rightBorder == 10) {
+            this.rightBorder = 9;
+            this.leftBorder = 3;
+        }
+
+
+
+
     }
 
     private boolean hasSameTypeNeighbor(Integer[] move, Domino domino) {
@@ -155,40 +173,40 @@ public class Board {
         Integer[] position = domino.getPosition();
 
         // Handle Corners
-        if(position[0] == this.topBorder && position[1] == this.leftBorder) {
+        if(position[0] == this.topBorder + 1 && position[1] == this.leftBorder + 1) {
             neighborsList.add(boardArr[position[0] + 1][position[1]]);
             neighborsList.add(boardArr[position[0]][position[1] + 1]);
         }
-        else if(position[0] == this.topBorder && position[1] == this.rightBorder) {
+        else if(position[0] == this.topBorder + 1 && position[1] == this.rightBorder - 1) {
             neighborsList.add(boardArr[position[0] + 1][position[1]]);
             neighborsList.add(boardArr[position[0]][position[1] - 1]);
         }
-        else if(position[0] == this.bottomBorder && position[1] == this.leftBorder) {
+        else if(position[0] == this.bottomBorder - 1 && position[1] == this.leftBorder + 1) {
             neighborsList.add(boardArr[position[0] - 1][position[1]]);
             neighborsList.add(boardArr[position[0]][position[1] + 1]);
         }
-        else if(position[0] == this.bottomBorder && position[1] == this.rightBorder) {
+        else if(position[0] == this.bottomBorder - 1 && position[1] == this.rightBorder - 1) {
             neighborsList.add(boardArr[position[0] - 1][position[1]]);
             neighborsList.add(boardArr[position[0]][position[1] - 1]);
         }
 
         // Handle Borders
-        else if(position[0] == this.topBorder) {
+        else if(position[0] == this.topBorder + 1) {
             neighborsList.add(boardArr[position[0] + 1][position[1]]);
             neighborsList.add(boardArr[position[0]][position[1] - 1]);
             neighborsList.add(boardArr[position[0]][position[1] + 1]);
         }
-        else if(position[0] == this.bottomBorder) {
+        else if(position[0] == this.bottomBorder - 1) {
             neighborsList.add(boardArr[position[0] - 1][position[1]]);
             neighborsList.add(boardArr[position[0]][position[1] + 1]);
             neighborsList.add(boardArr[position[0]][position[1] - 1]);
         }
-        else if(position[0] == this.leftBorder) {
+        else if(position[1] == this.leftBorder + 1) {
             neighborsList.add(boardArr[position[0] + 1][position[1]]);
             neighborsList.add(boardArr[position[0] - 1][position[1]]);
             neighborsList.add(boardArr[position[0]][position[1] + 1]);
         }
-        else if(position[0] == this.rightBorder) {
+        else if(position[1] == this.rightBorder - 1) {
             neighborsList.add(boardArr[position[0] + 1][position[1]]);
             neighborsList.add(boardArr[position[0] - 1][position[1]]);
             neighborsList.add(boardArr[position[0]][position[1] - 1]);

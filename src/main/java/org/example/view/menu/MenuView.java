@@ -4,15 +4,12 @@ import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.ViewTuple;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
-import javafx.stage.Stage;
 import org.example.Starter;
 import org.example.view.main.MainView;
 
@@ -35,7 +32,6 @@ public class MenuView implements FxmlView<MenuViewModel>, Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-
         List<Integer> choices = new ArrayList<>();
         for(var i = 0; i<3; i++) choices.add(i+2);
 
@@ -44,20 +40,17 @@ public class MenuView implements FxmlView<MenuViewModel>, Initializable {
         choosePlayers.setTitle("Nombre de joueurs");
         choosePlayers.setContentText("Combien de joueurs humains ? ");
 
-        startButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                Optional<Integer> result = choosePlayers.showAndWait();
-                result.ifPresent(integer -> viewModel.newGame(integer));
+        startButton.setOnAction(actionEvent -> {
+            Optional<Integer> result = choosePlayers.showAndWait();
+            result.ifPresent(integer -> viewModel.newGame());
 
-                ViewTuple viewTuple = FluentViewLoader.fxmlView(MainView.class).load();
+            ViewTuple viewTuple = FluentViewLoader.fxmlView(MainView.class).load();
 
-                Parent root = viewTuple.getView();
+            Parent root = viewTuple.getView();
 
-                mainScene = new Scene(root);
+            mainScene = new Scene(root);
 
-                Starter.getPrimaryStage().setScene(mainScene);
-            }
+            Starter.getPrimaryStage().setScene(mainScene);
         });
     }
 }
