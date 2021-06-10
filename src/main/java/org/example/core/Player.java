@@ -2,11 +2,9 @@ package org.example.core;
 
 public class Player {
 
-    private Board board;
-
-    private Castle castle;
-
     private static int nbInstances = 0;
+    private final Board board;
+    private final Castle castle;
 
     public Player(Castle castle, Board board) {
         this.castle = castle;
@@ -18,20 +16,12 @@ public class Player {
         nbInstances++;
     }
 
+    public static void resetInstances() {
+        nbInstances = 0;
+    }
+
     public Board getBoard() {
         return board;
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-
-    public Castle getCastle() {
-        return castle;
-    }
-
-    public void setCastle(Castle castle) {
-        this.castle = castle;
     }
 
     public Color getColor() {

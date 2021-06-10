@@ -4,19 +4,17 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -26,11 +24,13 @@ import javafx.scene.text.Font;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.core.Domino;
-import org.example.core.GameEngine;
 import org.example.core.Tile;
 import org.example.util.Ressource;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MainView implements FxmlView<MainViewModel>, Initializable {
@@ -52,11 +52,21 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
     @FXML
     private Label currentPlayerLabel;
 
+    @FXML
+    private Label selectedTileLabel;
+
+    private Domino[] selectedTile;
+
+    @FXML
+    private Label currentPlayerScore;
+
     private ImageView[][] boardView;
 
     private ImageView[][] tableView;
 
     private Label[][] labelTable;
+
+    private ChoiceDialog<String> chooseOrientation;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -64,32 +74,18 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 
         initBoard();
         initTable();
-
-        logger.debug("test");
+        initChooseOrientation();
 
         currentPlayerLabel.textProperty().bind(viewModel.currentPlayerProperty());
+        currentPlayerScore.textProperty().bind(viewModel.playerScoreProperty());
 
-        viewModel.getObservableBoard().addListener(new ListChangeListener<Tile>() {
-            @Override
-            public void onChanged(Change<? extends Tile> change) {
-                updateBoard();
-            }
-        });
+        viewModel.updateScore();
 
-        this.updateBoardButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                viewModel.nextPlayer();
-                viewModel.updateBoard();
-            }
-        });
+        viewModel.getObservableBoard().addListener((ListChangeListener<Tile>) change -> updateBoard());
 
-        viewModel.getObservableTable().addListener(new ListChangeListener<Domino[]>() {
-            @Override
-            public void onChanged(Change<? extends Domino[]> change) {
-                updateTable();
-            }
-        });
+        this.updateBoardButton.setOnAction(actionEvent -> viewModel.nextPlayer());
+
+        viewModel.getObservableTable().addListener((ListChangeListener<Domino[]>) change -> updateTable());
     }
 
     private void initBoard() {
@@ -103,15 +99,59 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
                 image.setFitWidth(100);
                 image.setFitHeight(100);
 
-                image.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent mouseEvent) {
-                        Node node = (Node)mouseEvent.getSource();
-                        int columnIndex = GridPane.getColumnIndex(node);
-                        int rowIndex = GridPane.getRowIndex(node);
+                image.setOnMouseClicked(mouseEvent -> {
 
-                        logger.debug("Node Row :" + rowIndex + "; Node Column :" + columnIndex);
+                    Integer[][] move = new Integer[2][2];
+
+                    Node node = (Node) mouseEvent.getSource();
+                    int columnIndex = GridPane.getColumnIndex(node);
+                    int rowIndex = GridPane.getRowIndex(node);
+
+                    final Integer[] secondTileCoordinate = new Integer[2];
+
+                    logger.debug("Node Row :" + rowIndex + "; Node Column :" + columnIndex);
+
+                    if (selectedTile != null) {
+                        Optional<String> result = chooseOrientation.showAndWait();
+                        result.ifPresentOrElse(string -> {
+                            switch (string) {
+                                case "Up":
+                                    secondTileCoordinate[0] = rowIndex - 1;
+                                    secondTileCoordinate[1] = columnIndex;
+                                    break;
+                                case "Down":
+                                    secondTileCoordinate[0] = rowIndex + 1;
+                                    secondTileCoordinate[1] = columnIndex;
+                                    break;
+                                case "Left":
+                                    secondTileCoordinate[0] = rowIndex;
+                                    secondTileCoordinate[1] = columnIndex - 1;
+                                    break;
+                                case "Right":
+                                    secondTileCoordinate[0] = rowIndex;
+                                    secondTileCoordinate[1] = columnIndex + 1;
+                                    break;
+                            }
+                        }, () -> {
+                            throw new RuntimeException();
+                        });
                     }
+
+                    move[0] = new Integer[]{rowIndex, columnIndex};
+                    move[1] = secondTileCoordinate;
+
+                    if (!viewModel.makeMove(move, selectedTile)) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Invalid Action");
+                        alert.setContentText("This Move is not valid, please try again");
+                        alert.show();
+                    } else {
+                        logger.debug("Domino Placed Successfully");
+                        viewModel.updateScore();
+                        viewModel.nextPlayer();
+                        viewModel.updateBoard();
+                    }
+
                 });
 
                 boardView[i][j] = image;
@@ -133,15 +173,19 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
                 image.setFitWidth(200);
                 image.setFitHeight(100);
 
-                image.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent mouseEvent) {
-                        Node node = (Node)mouseEvent.getSource();
-                        int columnIndex = GridPane.getColumnIndex(node);
-                        int rowIndex = GridPane.getRowIndex(node);
+                image.setOnMouseClicked(mouseEvent -> {
+                    Node node = (Node) mouseEvent.getSource();
+                    int columnIndex = GridPane.getColumnIndex(node);
+                    int rowIndex = GridPane.getRowIndex(node);
 
-                        logger.debug("Node Row :" + rowIndex + "; Node Column :" + columnIndex);
-                    }
+                    logger.debug("Node Row :" + rowIndex + "; Node Column :" + columnIndex);
+
+                    Domino[] selectedDomino = viewModel.getObservableTable().get(rowIndex + (3 * columnIndex));
+
+                    String selectedTileText = "Tile Number : " + selectedDomino[0].getNumber();
+
+                    selectedTileLabel.setText(selectedTileText);
+                    selectedTile = selectedDomino;
                 });
 
                 tableView[i][j] = image;
@@ -157,15 +201,12 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
                 label.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
                 label.setTextFill(Color.WHITE);
 
-                label.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent mouseEvent) {
-                        Node node = (Node)mouseEvent.getSource();
-                        int columnIndex = GridPane.getColumnIndex(node);
-                        int rowIndex = GridPane.getRowIndex(node);
+                label.setOnMouseClicked(mouseEvent -> {
+                    Node node = (Node) mouseEvent.getSource();
+                    int columnIndex = GridPane.getColumnIndex(node);
+                    int rowIndex = GridPane.getRowIndex(node);
 
-                        logger.debug("Node Row :" + rowIndex + "; Node Column :" + columnIndex);
-                    }
+                    logger.debug("Node Row :" + rowIndex + "; Node Column :" + columnIndex);
                 });
 
                 labelTable[i][j] = label;
@@ -186,7 +227,7 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
                     int index = board.get(j+(9*i)).getIndex();
                     boardView[i][j].setImage(Ressource.getRecto(board.get(j+9*i).getNumber(), index));
                 } else {
-                    boardView[i][j].setImage(null);
+                    boardView[i][j].setImage(Ressource.getWhite());
                 }
             }
         }
@@ -209,18 +250,15 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
         }
     }
 
-//    private void updateTable2() {
-//        int i = 0;
-//        int j = 0;
-//        for(Domino[] domino : viewModel.getObservableTable().get()) {
-//            tableView[i][j].setImage(Ressource.getVerso(2));
-//            tableView[i][j].toBack();
-//            i++;
-//            if(i == 3) {
-//                j++;
-//                i = 0;
-//            }
-//        }
-//    }
+    private void initChooseOrientation() {
+        List<String> choices = new ArrayList<>();
+        choices.add("Up");
+        choices.add("Down");
+        choices.add("Right");
+        choices.add("Left");
+
+        chooseOrientation = new ChoiceDialog<>("Up", choices);
+        chooseOrientation.setContentText("Choose an Orientation for the Domino");
+    }
 
 }
