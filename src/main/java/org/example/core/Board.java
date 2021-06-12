@@ -57,15 +57,6 @@ public class Board {
         return score;
     }
 
-    public int simuleScore(Integer[][] move, Domino[] domino){
-        int score = 0;
-        Tile[][] board = getBoardArr();
-        Tile[][] simuleBoard = board;
-        this.placeDomino(move, domino); // ===> Je veux le placer sur simuleBoard pas sur board !
-        this.computeScore(); // ===> Je veux calculer le score sur simuleBoard pas sur board !
-        return score;
-    }
-
     public int computeArea(Domino startingNode, Set<Tile> exploredNode) {
         Deque<Domino> stack = new ArrayDeque<>();
         stack.push(startingNode);
