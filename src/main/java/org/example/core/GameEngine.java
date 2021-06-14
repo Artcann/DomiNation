@@ -88,15 +88,15 @@ public class GameEngine {
 
         Collections.shuffle(kings);
 
-        //DEBUG ONLY
-        Integer[] kingsPosition = new Integer[3];
-        for(int i = 0; i<3; i++) {
-            kingsPosition[i] = this.table.get(i)[0].getNumber();
-        }
-
-        for(int i = 0; i< kings.size(); i++) {
-            kings.get(i).setPosition(sortedDeck.get(kingsPosition[i] - 1));
-        }
+//        //DEBUG ONLY
+//        Integer[] kingsPosition = new Integer[3];
+//        for(int i = 0; i<3; i++) {
+//            kingsPosition[i] = this.table.get(i)[0].getNumber();
+//        }
+//
+//        for(int i = 0; i< kings.size(); i++) {
+//            kings.get(i).setPosition(sortedDeck.get(kingsPosition[i] - 1));
+//        }
 
         //TODO: Faire une méthode piocher un domino
         for(int i = 0; i< kings.size(); i++) {
@@ -105,14 +105,16 @@ public class GameEngine {
 
         table.sort(new DominoSorter());
 
-        kings.sort(new KingSorter());
+        //kings.sort(new KingSorter());
 
 
     }
 
     public void nextPlayer() {
         this.currentPlayer = this.players.get((this.players.indexOf(this.currentPlayer) + 1) % (this.players.size()));
-        this.table.add(this.deck.remove(0));
+        while(this.table.size() < 6) {
+            this.table.add(this.deck.remove(0));
+        }
         this.table.sort(new DominoSorter());
     }
 

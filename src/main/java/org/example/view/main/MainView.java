@@ -83,7 +83,7 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 
         viewModel.getObservableBoard().addListener((ListChangeListener<Tile>) change -> updateBoard());
 
-        this.updateBoardButton.setOnAction(actionEvent -> viewModel.nextPlayer());
+        this.updateBoardButton.setOnAction(actionEvent -> nextPlayer());
 
         viewModel.getObservableTable().addListener((ListChangeListener<Domino[]>) change -> updateTable());
     }
@@ -148,7 +148,6 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
                     } else {
                         logger.debug("Domino Placed Successfully");
                         viewModel.updateScore();
-                        viewModel.nextPlayer();
                         viewModel.updateBoard();
                     }
 
@@ -234,6 +233,13 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
     }
 
     private void updateTable() {
+
+        for(int j=0; j<2; j++) {
+            for(int i=0; i<3; i++) {
+                tableView[i][j].setImage(Ressource.getWhite());
+            }
+        }
+
         int i = 0;
         int j = 0;
         for(Domino[] domino : viewModel.getObservableTable().get()) {
@@ -248,6 +254,12 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
                 i = 0;
             }
         }
+    }
+
+    private void nextPlayer() {
+        viewModel.nextPlayer();
+        viewModel.updateBoard();
+        viewModel.updateScore();
     }
 
     private void initChooseOrientation() {

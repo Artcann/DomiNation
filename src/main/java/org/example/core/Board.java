@@ -64,7 +64,7 @@ public class Board {
         var sizeOfArea = 0;
         while(!stack.isEmpty()) {
             Domino current = stack.pop();
-            if(current.getType().equals(startingNode.getType())) {
+            if(current.getType().equals(startingNode.getType()) && !exploredNode.contains(current)) {
                 exploredNode.add(current);
                 nbCrowns += current.getNbCrown();
                 sizeOfArea++;

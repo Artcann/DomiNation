@@ -15,7 +15,7 @@ public class MenuViewModel implements ViewModel {
         this.gameEngine = gameEngine;
     }
 
-    public void newGame() {
-        gameEngine.newGame(3);
+    public void newGame(int nbPlayers) {
+        gameEngine.newGame(nbPlayers);
     }
 }

@@ -16,6 +16,8 @@ import org.example.util.Ressource;
 import org.example.view.menu.MenuView;
 import org.example.view.menu.MenuViewModel;
 
+import java.io.IOException;
+
 public class Starter extends Application {
 
     private static final Logger logger = LogManager.getLogger(Starter.class);
@@ -27,9 +29,11 @@ public class Starter extends Application {
     }
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws IOException {
 
-        Thread.setDefaultUncaughtExceptionHandler((Thread t, Throwable e) -> e.printStackTrace());
+        Thread.setDefaultUncaughtExceptionHandler((Thread t, Throwable e) -> {
+            e.printStackTrace();
+        });
 
         EasyDI easyDI = new EasyDI();
         easyDI.bindProvider(HostServices.class, this::getHostServices);
@@ -45,7 +49,6 @@ public class Starter extends Application {
         stage.setTitle("Domi-Nation");
 
         ViewTuple<MenuView, MenuViewModel> viewTuple = FluentViewLoader.fxmlView(MenuView.class).load();
-
 
         Parent root = viewTuple.getView();
         stage.setScene(new Scene(root));

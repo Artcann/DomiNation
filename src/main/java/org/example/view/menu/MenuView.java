@@ -42,7 +42,7 @@ public class MenuView implements FxmlView<MenuViewModel>, Initializable {
 
         startButton.setOnAction(actionEvent -> {
             Optional<Integer> result = choosePlayers.showAndWait();
-            result.ifPresent(integer -> viewModel.newGame());
+            result.ifPresent(integer -> viewModel.newGame(integer));
 
             ViewTuple viewTuple = FluentViewLoader.fxmlView(MainView.class).load();
 
