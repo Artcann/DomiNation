@@ -107,7 +107,6 @@ public class GameEngine {
 
         kings.sort(new KingSorter());
 
-
     }
 
     public void nextPlayer() {
