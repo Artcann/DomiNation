@@ -8,11 +8,11 @@ import javax.inject.Inject;
 
 public class MenuViewModel implements ViewModel {
 
-    @Inject
     private final GameEngine gameEngine;
 
     public MenuViewModel(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
+
     }
 
     public void newGame() {

@@ -16,6 +16,8 @@ import org.example.util.Ressource;
 import org.example.view.menu.MenuView;
 import org.example.view.menu.MenuViewModel;
 
+import javax.inject.Provider;
+
 public class Starter extends Application {
 
     private static final Logger logger = LogManager.getLogger(Starter.class);
@@ -32,11 +34,13 @@ public class Starter extends Application {
         Thread.setDefaultUncaughtExceptionHandler((Thread t, Throwable e) -> e.printStackTrace());
 
         EasyDI easyDI = new EasyDI();
-        easyDI.bindProvider(HostServices.class, this::getHostServices);
+        MvvmFX.setCustomDependencyInjector(easyDI::getInstance);
 
         easyDI.markAsSingleton(GameEngine.class);
+        GameEngine gameEngine = new GameEngine(easyDI);
+        easyDI.bindInstance(GameEngine.class, gameEngine);
 
-        MvvmFX.setCustomDependencyInjector(easyDI::getInstance);
+
 
         primaryStage = stage;
 

@@ -1,35 +1,78 @@
 package org.example.core;
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.*;
 
 public class Ia extends Player{
 
-    private ArrayList<Integer[][]> allMove = new ArrayList<Integer[][]>();
-    private ArrayList<Integer[][]> allLegalMove = new ArrayList<>();
+    private final ArrayList<Integer[][]> allMove = new ArrayList<>();
     private Integer[][] move;
     private Domino[] bestDomino;
-    private Board board = new Board();
-    private GameEngine jeu = new GameEngine();
 
-    public Ia(Castle castle, Board board) throws IOException {
-        super(castle, board);
+    public Ia(Castle castle, Board board, GameEngine gameEngine) {
+        super(castle, board, gameEngine);
+
         allMove();
     }
 
     private void allMove(){
-        for(int a = 0; a < 9; a++){
-            for(int b = 0; b < 9; b++){
-                for(int c = 0; c < 9; c++){
-                    for(int d = 0; d < 9; d++){
-                        Integer[][] move = {{a, b}, {c, d}};
-                        allMove.add(move);
-                    }
+        for(int i = 0; i < 9; i++){
+            for(int j = 0; j < 9; j++) {
+                Integer[] move = new Integer[]{i, j};
+
+                // Handle Corners
+                if(i == 0 && j == 0) {
+                    allMove.add(new Integer[][]{move, {i, j+1}});
+                    allMove.add(new Integer[][]{move, {i+1, j}});
+                }
+                else if(i == 0 && j == 8) {
+                    allMove.add(new Integer[][]{move, {i+1, j}});
+                    allMove.add(new Integer[][]{move, {i, j-1}});
+                }
+                else if(i == 8 && j == 0) {
+                    allMove.add(new Integer[][]{move, {i-1, j}});
+                    allMove.add(new Integer[][]{move, {i, j+1}});
+                }
+                else if(i == 8 && j == 8) {
+                    allMove.add(new Integer[][]{move, {i-1, j}});
+                    allMove.add(new Integer[][]{move, {i, j-1}});
+                }
+
+                // Handle Borders
+                else if(i == 0) {
+                    allMove.add(new Integer[][]{move, {i+1, j}});
+                    allMove.add(new Integer[][]{move, {i, j-1}});
+                    allMove.add(new Integer[][]{move, {i, j+1}});
+                }
+                else if(i == 8) {
+                    allMove.add(new Integer[][]{move, {i-1, j}});
+                    allMove.add(new Integer[][]{move, {i, j+1}});
+                    allMove.add(new Integer[][]{move, {i, j-1}});
+                }
+                else if(j == 0) {
+                    allMove.add(new Integer[][]{move, {i+1, j}});
+                    allMove.add(new Integer[][]{move, {i-1, j}});
+                    allMove.add(new Integer[][]{move, {i, j+1}});
+                }
+                else if(j == 8) {
+                    allMove.add(new Integer[][]{move, {i+1, j}});
+                    allMove.add(new Integer[][]{move, {i-1, j}});
+                    allMove.add(new Integer[][]{move, {i, j-1}});
+                }
+
+                //Handle Center
+                else {
+                    allMove.add(new Integer[][]{move, {i+1, j}});
+                    allMove.add(new Integer[][]{move, {i-1, j}});
+                    allMove.add(new Integer[][]{move, {i, j+1}});
+                    allMove.add(new Integer[][]{move, {i, j-1}});
                 }
             }
         }
     }
 
-    private ArrayList<Integer[][]> allLegalsMovesForAGivenDomino(Domino[] domino){
+    public List<Integer[][]> allLegalMove(Domino[] domino){
+        List<Integer[][]> allLegalMove = new ArrayList<>();
         for(Integer[][] move: allMove){
             if(this.board.isValidMove(move, domino)){
                 allLegalMove.add(move);
@@ -40,34 +83,56 @@ public class Ia extends Player{
 
     public int simulateScore(Integer[][] move, Domino[] domino){
         int score;
-        Board simulateBoard = this.board;
+        Board simulateBoard = null;
+        try {
+            simulateBoard = new Board();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert simulateBoard != null;
+        Tile[][] boardCopy = new Tile[9][9];
+        for(int i = 0; i<9; i++) {
+            boardCopy[i] = Arrays.copyOf(this.board.getBoardArr()[i], 9);
+        }
+
+        simulateBoard.initBoard(boardCopy);
         simulateBoard.placeDomino(move, domino);
         score = simulateBoard.computeScore();
         return score;
     }
 
-    private Integer[][] bestMove(Domino[] domino){
-        TreeMap<Integer, Integer[][]> bestMovePerDomino = new TreeMap();
-        allLegalsMovesForAGivenDomino(domino);
+    public Integer[][] bestMove(Domino[] domino){
+        TreeMap<Integer, Integer[][]> bestMovePerDomino = new TreeMap<>();
+        List<Integer[][]> allLegalMove = allLegalMove(domino);
         for(Integer[][] move: allLegalMove){
             bestMovePerDomino.put(simulateScore(move, domino), move);
         }
-        Integer[][] bestMove = bestMovePerDomino.lastEntry().getValue();
-        return bestMove;
+        if (bestMovePerDomino.lastEntry() != null) {
+            return bestMovePerDomino.lastEntry().getValue();
+        } else {
+            return null;
+        }
+
     }
 
     private Domino[] bestDominoToPlay(){
-        List<Domino[]> actualTable = jeu.getTable();
-        TreeMap<Integer, Domino[]> bestMoveForEachDominoAvailable = new TreeMap();
+        List<Domino[]> actualTable = this.gameEngine.getTable();
+        TreeMap<Integer, Domino[]> bestMoveForEachDominoAvailable = new TreeMap<>();
         for(Domino[] domino : actualTable){
-            bestMoveForEachDominoAvailable.put(simulateScore(bestMove(domino), domino), domino);
+            if(bestMove(domino) != null) {
+                bestMoveForEachDominoAvailable.put(simulateScore(bestMove(domino), domino), domino);
+            }
         }
-        Domino[] bestDominoToPlay = bestMoveForEachDominoAvailable.lastEntry().getValue();
-        return bestDominoToPlay;
+        return bestMoveForEachDominoAvailable.lastEntry().getValue();
     }
 
-    public void executeBestMove(){
-        bestDominoToPlay();
-        this.board.placeDomino(bestMove(bestDominoToPlay()) ,bestDominoToPlay());
+    public Domino[] executeBestMove(){
+        Domino[] domino = bestDominoToPlay();
+        this.board.placeDomino(bestMove(domino), domino);
+        return domino;
+    }
+
+    public ArrayList<Integer[][]> getAllMove() {
+        return allMove;
     }
 }

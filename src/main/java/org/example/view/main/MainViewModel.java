@@ -101,7 +101,6 @@ public class MainViewModel implements ViewModel {
     }
 
     public void nextPlayer() {
-        observableTable.remove(0);
         gameEngine.nextPlayer();
         updateScore();
         updateBoard();

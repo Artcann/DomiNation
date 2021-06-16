@@ -7,7 +7,7 @@ import org.example.util.ReadPropertyFile;
 import java.io.*;
 import java.util.*;
 
-public class Board {
+public class Board implements Cloneable {
 
     private static final Logger logger = LogManager.getLogger(Board.class);
 
@@ -39,6 +39,10 @@ public class Board {
         this.boardArr[(this.size+1) / 2 - 1][(this.size+1) / 2 - 1] = castle;
         Integer[] castlePosition = {4, 4};
         castle.setPosition(castlePosition);
+    }
+
+    public void initBoard(Tile[][] boardArr) {
+        this.boardArr = boardArr;
     }
 
     public int computeScore() {
@@ -256,4 +260,5 @@ public class Board {
     public Tile[][] getBoardArr() {
         return this.boardArr;
     }
+
 }

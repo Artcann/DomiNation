@@ -3,12 +3,14 @@ package org.example.core;
 public class Player {
 
     private static int nbInstances = 0;
-    private final Board board;
-    private final Castle castle;
+    protected final Board board;
+    protected final Castle castle;
+    protected final GameEngine gameEngine;
 
-    public Player(Castle castle, Board board) {
+    public Player(Castle castle, Board board, GameEngine gameEngine) {
         this.castle = castle;
         this.board = board;
+        this.gameEngine = gameEngine;
 
         this.castle.setColor(Color.values()[nbInstances]);
         this.board.initBoard(this.castle);

@@ -22,6 +22,8 @@ public class Ressource {
     public static void loadRessources() {
         blueCastle = new Image(Objects.requireNonNull(Ressource.class.getClassLoader().getResourceAsStream("blueCastle.png")));
         pinkCastle = new Image(Objects.requireNonNull(Ressource.class.getClassLoader().getResourceAsStream("pinkCastle.png")));
+        yellowCastle = new Image(Objects.requireNonNull(Ressource.class.getClassLoader().getResourceAsStream("yellowCastle.png")));
+        greenCastle = new Image(Objects.requireNonNull(Ressource.class.getClassLoader().getResourceAsStream("greenCastle.png")));
 
         recto = new Image(Objects.requireNonNull(Ressource.class.getClassLoader().getResourceAsStream("recto.png")));
         white = new Image(Objects.requireNonNull(Ressource.class.getClassLoader().getResourceAsStream("white.png")));
@@ -33,6 +35,10 @@ public class Ressource {
                 return blueCastle;
             case PINK:
                 return pinkCastle;
+            case YELLOW:
+                return yellowCastle;
+            case GREEN:
+                return greenCastle;
         }
         return null;
     }
